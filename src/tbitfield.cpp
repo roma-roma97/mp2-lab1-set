@@ -38,21 +38,16 @@ TBitField::~TBitField()
 
 int TBitField::GetMemIndex(const int n) const // индекс Мем для бита n
 {
-	if (n == 0)
-		return ((BitLen - n) / 32) - 1;
-	else
-		return (BitLen - n) / 32;
-
+	return MemLen-1-(n / 32);
 }
 
 TELEM TBitField::GetMemMask(const int n) const // битовая маска для бита n
 {
-	TELEM a = 1;
-	if (n > 31)
-		a << (n % 32);
-	else
-		a << n;
-	return a;
+	if (n<0 || n>=BitLen)
+		throw(n);
+	TELEM position = 1;
+		position << (n % 32);
+	return position;
 }
 
 // доступ к битам битового поля
@@ -67,12 +62,7 @@ void TBitField::SetBit(const int n) // установить бит
 	TELEM tmp = 1;
 	if ((n < 0)||(n>BitLen))
 		throw(n);
-	if (n == 0)
-		pMem[((BitLen - n) / 32) - 1] |= (tmp << (n % 32));
-	if(n>31)
-		pMem[(BitLen - n) / 32] |= (tmp << (n % 32));
-	else
-		pMem[(BitLen - n) / 32] |= (tmp << n);
+	pMem[GetMemIndex(n)] |= (GetMemMask(n));
 
 }
 
@@ -81,17 +71,14 @@ void TBitField::ClrBit(const int n) // очистить бит
 	TELEM tmp = 1;
 	if ((n < 0)||(n>BitLen))
 		throw(n);
-	if (n == 0)
-		pMem[((BitLen - n) / 32) - 1] ^= (tmp << (n % 32));
-	else
-		pMem[(BitLen - n) / 32] ^= (tmp << (n % 32));
+	pMem[GetMemIndex(n)] &= (~GetMemMask(n));
 }
 
 int TBitField::GetBit(const int n) const // получить значение бита
 {
 	if ((n < 0)||(n>BitLen))
 		throw(n);
-	TELEM tmp = pMem[(BitLen - n) / 32];
+	TELEM tmp = pMem[GetMemIndex(n)];
 	tmp &= GetMemMask(n);
 	/*if (n > 0)*/
 	if (tmp != 0)
@@ -166,17 +153,19 @@ TBitField TBitField::operator&(const TBitField &bf) // операция "и"
 
 TBitField TBitField::operator~(void) // отрицание
 {
-	for (int i = 0; i < MemLen; i++)
-		~pMem[i];
+	for (int i = 0; i < BitLen; i++)
+		pMem[GetMemIndex(i)]^=GetMemMask(i);
 	return *this;
 }
 
 // ввод/вывод
 
-//istream &operator>>(istream &istr, TBitField &bf) // ввод
-//{
-//}
-//
-//ostream &operator<<(ostream &ostr, const TBitField &bf) // вывод
-//{
-//}
+istream &operator>>(istream &istr, TBitField &bf) // ввод
+{
+	return istr;
+}
+
+ostream &operator<<(ostream &ostr, const TBitField &bf) // вывод
+{
+	return ostr;
+}
