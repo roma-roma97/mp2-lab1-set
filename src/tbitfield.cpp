@@ -62,7 +62,6 @@ void TBitField::SetBit(const int n) // установить бит
 	if ((n < 0) || (n >= BitLen))
 		throw(n);
 	pMem[GetMemIndex(n)] |= GetMemMask(n);
-
 }
 
 void TBitField::ClrBit(const int n) // очистить бит
@@ -97,9 +96,7 @@ TBitField& TBitField::operator=(const TBitField &bf) // присваивание
 		pMem = new TELEM[MemLen];
 	}
 	for (int i = 0; i < bf.MemLen; i++)
-	{
 		pMem[i] = bf.pMem[i];
-	}
 	return *this;
 }
 
@@ -174,15 +171,17 @@ istream &operator>>(istream &istr, TBitField &bf) // ввод
 		if (str[i] == ' ')
 			count++;
 		if (str[i] == '1')
-		{
-
 			bf.SetBit(i - count);
-		}
 	}
 	return istr;
 }
 
 ostream &operator<<(ostream &ostr, const TBitField &bf) // вывод
 {
+	for (int i = 0; i < bf.BitLen; i++)
+		if ((bf.pMem[bf.GetMemIndex(i)] & bf.GetMemMask(i)) == bf.GetMemMask(i))
+			ostr << "1";
+		else
+			ostr << "0";
 	return ostr;
 }

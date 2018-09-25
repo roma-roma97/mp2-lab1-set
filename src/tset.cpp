@@ -57,8 +57,8 @@ TSet& TSet::operator=(const TSet &s) // присваивание
 {
 	if (&s == this)
 		return *this;
-	this->BitField = s.BitField;
-	this->MaxPower = s.MaxPower;
+	BitField = s.BitField;
+	MaxPower = s.MaxPower;
 	return *this;
 }
 
@@ -100,9 +100,10 @@ TSet TSet::operator+(const int Elem) // объединение с элемент
 {
 	if (Elem < 0 || Elem >= MaxPower)
 		throw(Elem);
-	TSet Union(MaxPower);
-	BitField.SetBit(Elem);
-	Union.BitField=BitField;
+	TSet Union(*this);
+	//BitField.SetBit(Elem);
+	//Union.BitField=BitField;
+	Union.BitField.SetBit(Elem);
 	return Union;
 }
 //
@@ -137,11 +138,12 @@ TSet TSet::operator~(void) // дополнение
 //
 istream &operator>>(istream &istr, TSet &s) // ввод
 {
-
+	istr >> s.BitField;
 	return istr;
 }
 
 ostream& operator<<(ostream &ostr, const TSet &s) // вывод
 {
+	ostr << s.BitField;
 	return ostr;
 }
